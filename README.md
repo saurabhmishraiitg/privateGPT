@@ -1,12 +1,19 @@
 # privateGPT
 Ask questions to your documents without an internet connection, using the power of LLMs. 100% private, no data leaves your execution environment at any point. You can ingest documents and ask questions without an internet connection!
 
-Built with [LangChain](https://github.com/hwchase17/langchain), [GPT4All](https://github.com/nomic-ai/gpt4all), [LlamaCpp](https://github.com/ggerganov/llama.cpp), [Chroma](https://www.trychroma.com/) and [SentenceTransformers](https://www.sbert.net/).
+Built with [LangChain](https://github.com/hwchase17/langchain), [GPT4All](https://github.com/nomic-ai/gpt4all), [LlamaCpp](https://github.com/ggerganov/llama.cpp), [Chroma](https://www.trychroma.com/), [SentenceTransformers](https://www.sbert.net/) and [GPTCache](https://github.com/zilliztech/GPTCache).
+
 
 <img width="902" alt="demo" src="https://user-images.githubusercontent.com/721666/236942256-985801c9-25b9-48ef-80be-3acbb4575164.png">
 
 # Environment Setup
 In order to set your environment up to run the code here, first install all requirements:
+
+If you have a Nvidia GPU, you can speed things up by installing the llama-cpp-python version with CUDA by setting these flags:
+- On windows: `🚧 WIP`
+- On linux: `export LLAMA_CUBLAS=1`
+
+After you can run the following command to install all requirements:
 
 ```shell
 pip3 install -r requirements.txt
@@ -36,9 +43,12 @@ MODEL_TYPE: supports LlamaCpp or GPT4All
 PERSIST_DIRECTORY: is the folder you want your vectorstore in
 MODEL_PATH: Path to your GPT4All or LlamaCpp supported LLM
 MODEL_N_CTX: Maximum token limit for the LLM model
-MODEL_N_BATCH: Number of tokens in the prompt that are fed into the model at a time. Optimal value differs a lot depending on the model (8 works well for GPT4All, and 1024 is better for LlamaCpp)
+MODEL_N_BATCH: Number of tokens in the prompt that are fed into the model at a time. Optimal value differs a lot depending on the model (8 works well for GPT4All, and 1024 is better for LlamaCpp). The number of tokens processed at any one time. The lower this value, the less hardware resources will be required, but the query may be very slow; a high value, on the other hand, speeds things up at the cost of higher memory usage.
+MODEL_N_THREADS: Number of processesor threads to use
 EMBEDDINGS_MODEL_NAME: SentenceTransformers embeddings model name (see https://www.sbert.net/docs/pretrained_models.html)
 TARGET_SOURCE_CHUNKS: The amount of chunks (sources) that will be used to answer a question
+USE_MLOCK If this value is set to 1, the entire model will be loaded into RAM (avoid using the disk but use more RAM), if you have little RAM, set this value to 0
+N_GPU_LAYERS If you have an Nvidia video card and have performed the installation, this option allows you to load part of the model onto the GPU. Setting high numbers (e.g. 20) may crash the application with an "out of memory" error, if you have a powerful GPU, set this value to 1000 to try to load the entire model on the GPU
 ```
 
 Note: because of the way `langchain` loads the `SentenceTransformers` embeddings, the first time you run the script it will require internet connection to download the embeddings model itself.
