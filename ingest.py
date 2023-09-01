@@ -1,32 +1,26 @@
 #!/usr/bin/env python3
-import os
 import glob
-from typing import List
-from dotenv import load_dotenv
+import os
 from multiprocessing import Pool
-from tqdm import tqdm
-from nltk.tokenize import punkt
+from typing import List
 
-from langchain.document_loaders import (
-    CSVLoader,
-    EverNoteLoader,
-    PyMuPDFLoader,
-    TextLoader,
-    UnstructuredEmailLoader,
-    UnstructuredEPubLoader,
-    UnstructuredHTMLLoader,
-    UnstructuredMarkdownLoader,
-    UnstructuredODTLoader,
-    UnstructuredPowerPointLoader,
-    UnstructuredWordDocumentLoader,
-)
-
+from constants import CHROMA_SETTINGS
+from dotenv import load_dotenv
+from langchain.docstore.document import Document
+from langchain.document_loaders import (CSVLoader, EverNoteLoader,
+                                        PyMuPDFLoader, TextLoader,
+                                        UnstructuredEmailLoader,
+                                        UnstructuredEPubLoader,
+                                        UnstructuredHTMLLoader,
+                                        UnstructuredMarkdownLoader,
+                                        UnstructuredODTLoader,
+                                        UnstructuredPowerPointLoader,
+                                        UnstructuredWordDocumentLoader)
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.docstore.document import Document
-from constants import CHROMA_SETTINGS
-
+from nltk.tokenize import punkt
+from tqdm import tqdm
 
 load_dotenv()
 
@@ -156,7 +150,8 @@ def main():
         print("Creating new vectorstore")
         texts = process_documents()
         print(f"Creating embeddings. May take some minutes...")
-        db = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, client_settings=CHROMA_SETTINGS)
+        # db = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, client_settings=CHROMA_SETTINGS)
+        db = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory)
     db.persist()
     db = None
 
